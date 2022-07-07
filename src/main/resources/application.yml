@@ -1,0 +1,15 @@
+slf4j:
+  version: 1.7.32
+pi4j:
+  version: 2.1.1
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/sprinklerdatabase"
+    username: sprinklerserver
+    password: parabole1
+
+
