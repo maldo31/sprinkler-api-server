@@ -11,5 +11,14 @@ spring:
     url: "jdbc:postgresql://localhost:5432/sprinklerdatabase"
     username: sprinklerserver
     password: parabole1
+  data:
+    mongodb:
+      authentication-database: admin
+      username: root
+      password: root
+      database: test_db
+      port: 27017
+      host: localhost
+
 
 

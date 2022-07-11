@@ -19,10 +19,13 @@ public class Endpoint {
 
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String name;
     private String address;
+    private boolean flowMeter;
+    private boolean moistureSensor;
+    private boolean electroValve;
 
 }
