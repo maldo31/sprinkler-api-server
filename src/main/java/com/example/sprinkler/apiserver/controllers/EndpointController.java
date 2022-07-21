@@ -11,19 +11,35 @@ public class EndpointController {
     EndpointService endpointService;
 
     @GetMapping("/ledon")
-    public String turnLedOn() throws Exception {
-        endpointService.turnOnLed();
-        return "led state set to on";
+    public String turnLedOn(@RequestParam String name) throws Exception {
+        return endpointService.turnOnLed(name);
     }
+
     @GetMapping("/ledoff")
-    public String turnLedOff() throws Exception {
-        endpointService.turnOffLed();
-        return "led state set to off";
+    public String turnLedOff(@RequestParam String name) throws Exception {
+        return endpointService.turnOffLed(name);
     }
-    @PostMapping("/add_endpoin")
-    public String addEndpoint(@RequestParam String name,@RequestParam String address){
-        endpointService.addEndpoint(name,address);
+
+    @PostMapping("/add_endpoint")
+    public String addEndpoint(@RequestParam String name, @RequestParam String address) {
+        endpointService.addEndpoint(name, address);
         return "created endpoint";
+    }
+
+    @GetMapping("/get_endpoint")
+    public String getEndpoint(@RequestParam String name) {
+        return endpointService.getEndpoint(name);
+    }
+
+    @GetMapping("/get_endpoints")
+    public String getEndpoint() {
+        return endpointService.getEndpoints();
+    }
+
+    @DeleteMapping("/delete_endpoint")
+    public String deleteEndpoint(@RequestParam String name) {
+        endpointService.deleteEndpoint(name);
+        return "deleted endpoint";
     }
 
 
