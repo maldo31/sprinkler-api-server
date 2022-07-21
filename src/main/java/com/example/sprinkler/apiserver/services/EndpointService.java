@@ -12,6 +12,8 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
 public class EndpointService {
@@ -59,9 +61,8 @@ public class EndpointService {
     }
 
     @Transactional
-    public void addEndpoint(String name, String address) {
-        endpointRepository.save(Endpoint.builder().name(name).address(address).build());
-        endpointRepository.findAll().forEach(System.out::println);
+    public String addEndpoint(String name, String address, Integer sprinklingHour,Integer sprinklingMinute) {
+        return endpointRepository.save(Endpoint.builder().name(name).address(address).sprinklingTime(LocalTime.of(sprinklingHour,sprinklingMinute)).build()).toString();
     }
 
     public String getEndpoint(String name) {

@@ -21,9 +21,8 @@ public class EndpointController {
     }
 
     @PostMapping("/add_endpoint")
-    public String addEndpoint(@RequestParam String name, @RequestParam String address) {
-        endpointService.addEndpoint(name, address);
-        return "created endpoint";
+    public String addEndpoint(@RequestParam String name, @RequestParam String address, @RequestParam Integer sprinklingHour, @RequestParam Integer sprinklingMinute) {
+        return endpointService.addEndpoint(name, address, sprinklingHour, sprinklingMinute);
     }
 
     @GetMapping("/get_endpoint")
@@ -32,7 +31,7 @@ public class EndpointController {
     }
 
     @GetMapping("/get_endpoints")
-    public String getEndpoint() {
+    public String getEndpoints() {
         return endpointService.getEndpoints();
     }
 
