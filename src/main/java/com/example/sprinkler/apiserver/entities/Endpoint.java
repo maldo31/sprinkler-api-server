@@ -23,9 +23,9 @@ public class Endpoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String name;
     private String address;
+    private String city;
     private boolean flowMeter;
     private boolean moistureSensor;
     private boolean electroValve;

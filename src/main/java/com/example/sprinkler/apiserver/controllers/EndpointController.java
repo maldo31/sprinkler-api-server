@@ -21,8 +21,8 @@ public class EndpointController {
     }
 
     @PostMapping("/add_endpoint")
-    public String addEndpoint(@RequestParam String name, @RequestParam String address) {
-        return endpointService.addEndpoint(name, address);
+    public String addEndpoint(@RequestParam String name, @RequestParam String address, @RequestParam String city) {
+        return endpointService.addEndpoint(name, address,city);
     }
 
     @GetMapping("/get_endpoint")

@@ -61,8 +61,8 @@ public class EndpointService {
     }
 
     @Transactional
-    public String addEndpoint(String name, String address) {
-        return endpointRepository.save(Endpoint.builder().name(name).address(address).build()).toString();
+    public String addEndpoint(String name, String address, String city) {
+        return endpointRepository.save(Endpoint.builder().name(name).address(address).city(city).build()).toString();
     }
 
     public String getEndpoint(String name) {
