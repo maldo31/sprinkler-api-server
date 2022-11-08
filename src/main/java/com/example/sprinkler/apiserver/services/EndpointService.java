@@ -61,8 +61,8 @@ public class EndpointService {
     }
 
     @Transactional
-    public String addEndpoint(String name, String address, Integer sprinklingHour,Integer sprinklingMinute) {
-        return endpointRepository.save(Endpoint.builder().name(name).address(address).sprinklingTime(LocalTime.of(sprinklingHour,sprinklingMinute)).build()).toString();
+    public String addEndpoint(String name, String address) {
+        return endpointRepository.save(Endpoint.builder().name(name).address(address).build()).toString();
     }
 
     public String getEndpoint(String name) {

@@ -21,7 +21,7 @@ public class Endpoint {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String name;
@@ -29,6 +29,6 @@ public class Endpoint {
     private boolean flowMeter;
     private boolean moistureSensor;
     private boolean electroValve;
-    private LocalTime sprinklingTime;
+
 
 }
