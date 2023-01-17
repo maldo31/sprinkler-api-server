@@ -9,8 +9,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     url: "jdbc:postgresql://localhost:5432/sprinklerdatabase"
-    username: postgres
-    password: password
+    username: "sprinklerserver"
+    password: parabole1
   security:
     user:
       password: admin
