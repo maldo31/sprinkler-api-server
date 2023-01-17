@@ -5,15 +5,18 @@ pi4j:
 spring:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     url: "jdbc:postgresql://localhost:5432/sprinklerdatabase"
     username: "sprinklerserver"
     password: parabole1
-  security:
-    user:
-      password: admin
+    driver-class-name: org.postgresql.Driver
 apiKeys:
   geo: "CxtK5Aq0lPJt1FR+o+NDAQ==HneU0PTvhzAxmk44"
   #https://api.openweathermap.org
