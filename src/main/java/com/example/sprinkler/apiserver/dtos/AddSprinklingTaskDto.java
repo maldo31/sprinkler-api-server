@@ -15,4 +15,5 @@ public class AddSprinklingTaskDto {
   private String hour;
   private String day;
   private Integer endpointId;
+  private long sprinklingDuration;
 }

@@ -30,9 +30,8 @@ public class EndpointScheduleController {
   }
 
   @PostMapping("/schedule_cron_task")
-  public String scheduleTask(@RequestParam String text,
-      @RequestBody AddSprinklingTaskDto addSprinklingTaskDto) {
-    return endpointScheduleService.scheduleCronTask(addSprinklingTaskDto, text);
+  public String scheduleTask(@RequestBody AddSprinklingTaskDto addSprinklingTaskDto) {
+    return endpointScheduleService.scheduleCronTask(addSprinklingTaskDto);
   }
 
   @DeleteMapping("/delete_schedule")

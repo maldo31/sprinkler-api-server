@@ -24,6 +24,9 @@ public class EndpointScheduleService {
   @Autowired
   EndpointRepository endpointRepository;
 
+  @Autowired
+  EndpointService endpointService;
+
   Map<Integer, ScheduledFuture<?>> tasksMap = new HashMap<>();
 
   ThreadPoolTaskSchedulerConfig threadPoolTaskSchedulerConfig = new ThreadPoolTaskSchedulerConfig();
@@ -40,10 +43,11 @@ public class EndpointScheduleService {
     return endpointScheduleRepository.findAll().toString();
   }
 
-  public String scheduleCronTask(AddSprinklingTaskDto addSprinklingTaskDto, String text) {
+  public String scheduleCronTask(AddSprinklingTaskDto addSprinklingTaskDto) {
     var endpoint = endpointRepository.findById(addSprinklingTaskDto.getEndpointId()).orElseThrow();
     CronTrigger cronTrigger = new CronTrigger(executionDateToCronExpression(addSprinklingTaskDto));
-    ScheduledFuture<?> scheduledTask = scheduler.schedule(new SprinklingTask(text,endpoint), cronTrigger);
+    ScheduledFuture<?> scheduledTask = scheduler.schedule(new SprinklingTask(endpoint, endpointService, addSprinklingTaskDto.getSprinklingDuration()),
+        cronTrigger);
     tasksMap.put(taskId, scheduledTask);
 
     var endpointSchedule = EndpointSchedule.builder()

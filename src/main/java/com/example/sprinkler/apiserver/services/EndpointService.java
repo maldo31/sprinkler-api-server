@@ -28,7 +28,6 @@ public class EndpointService {
       HttpURLConnection con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
       con.getResponseCode();
-      System.out.println("test");
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
     } catch (ConnectException e) {
