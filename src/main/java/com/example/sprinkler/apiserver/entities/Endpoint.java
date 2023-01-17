@@ -1,16 +1,13 @@
 package com.example.sprinkler.apiserver.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -20,17 +17,18 @@ import java.time.LocalTime;
 public class Endpoint {
 
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String name;
-    private String address;
-    private String city;
-    private Double latitude;
-    private Double longitude;
-    private boolean flowMeter;
-    private boolean moistureSensor;
-    private boolean electroValve;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
+  private String name;
+  private String address;
+  private String city;
+  private Double latitude;
+  private Double longitude;
+  private Double expectedRainfall;
+  private boolean flowMeter;
+  private boolean moistureSensor;
+  private boolean electroValve;
 
 
 }
