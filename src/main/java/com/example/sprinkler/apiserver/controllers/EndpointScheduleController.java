@@ -27,4 +27,9 @@ public class EndpointScheduleController {
 
     }
 
+    @PostMapping("/schedule_task")
+    public String scheduleTask(@RequestParam Integer period, @RequestParam String text){
+        return endpointScheduleService.scheduleTask(period,text);
+    }
+
 }
