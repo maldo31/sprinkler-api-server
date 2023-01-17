@@ -8,9 +8,9 @@ spring:
       ddl-auto: create
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: "jdbc:postgresql://localhost:5432/sprinklerdatabase"
-    username: sprinklerserver
-    password: parabole1
+    url: "jdbc:postgresql://localhost:49153/sprinklerdatabase"
+    username: postgres
+    password: password
 
 
 

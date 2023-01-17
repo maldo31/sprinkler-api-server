@@ -1,19 +1,18 @@
 package com.example.sprinkler.apiserver.services;
 
+import com.example.sprinkler.apiserver.dtos.EndpointLocationDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Point;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class EndpointService {
@@ -62,7 +61,14 @@ public class EndpointService {
 
     @Transactional
     public String addEndpoint(String name, String address, String city) {
-        return endpointRepository.save(Endpoint.builder().name(name).address(address).city(city).build()).toString();
+        var endpointLocation = getCoordinates(city);
+        return endpointRepository.save(Endpoint.builder()
+            .name(name)
+            .address(address)
+            .city(city)
+            .latitude(endpointLocation.getX())
+            .longitude(endpointLocation.getY())
+            .build()).toString();
     }
 
     public String getEndpoint(String name) {
@@ -75,5 +81,17 @@ public class EndpointService {
 
     public String getEndpoints() {
         return endpointRepository.findAll().toString();
+    }
+
+    private Point getCoordinates(String city) {
+        WebClient client = WebClient.builder()
+            .defaultHeader("X-Api-Key","CxtK5Aq0lPJt1FR+o+NDAQ==HneU0PTvhzAxmk44")
+            .build();
+        var responseSpec = client.get()
+            .uri("https://api.api-ninjas.com/v1/geocoding?city=" + city)
+            .retrieve()
+            .bodyToFlux(EndpointLocationDto.class)
+            .blockFirst();
+        return new Point(Double.parseDouble(responseSpec.getLatitude()), Double.parseDouble(responseSpec.getLongitude()));
     }
 }

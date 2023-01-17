@@ -26,6 +26,8 @@ public class Endpoint {
     private String name;
     private String address;
     private String city;
+    private Double latitude;
+    private Double longitude;
     private boolean flowMeter;
     private boolean moistureSensor;
     private boolean electroValve;

@@ -36,6 +36,8 @@ public class ForecastService {
                 .uri("https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=de338ff9b1c030f6106b720bd64c0821")
                 .retrieve()
                 .bodyToMono(String.class);
+
+        //.uri("https://api.open-meteo.com/v1/forecast?latitude=51.77&longitude=19.47&daily=rain_sum&timezone=Europe%2FBerlin&start_date=2022-11-19&end_date=2022-11-21")
         System.out.println(city);
         System.out.println(LocalTime.now());
         System.out.println(responseSpec.block());
