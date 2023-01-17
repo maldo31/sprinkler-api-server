@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddSprinklingTaskDto {
+
   private String minute;
   private String hour;
   private String day;

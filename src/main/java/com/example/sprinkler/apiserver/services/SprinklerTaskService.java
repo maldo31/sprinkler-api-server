@@ -6,16 +6,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 public class SprinklerTaskService {
 
-    @Autowired
-    EndpointController endpointController;
+  @Autowired
+  EndpointController endpointController;
 
 
+  @Scheduled(cron = "0 15 10 15 * ?")
+  public void scheduleTaskUsingCronExpression() {
 
-    @Scheduled(cron = "0 15 10 15 * ?")
-    public void scheduleTaskUsingCronExpression() {
-
-        long now = System.currentTimeMillis() / 1000;
-        System.out.println(
-                "schedule tasks using cron jobs - " + now);
-    }
+    long now = System.currentTimeMillis() / 1000;
+    System.out.println(
+        "schedule tasks using cron jobs - " + now);
+  }
 }

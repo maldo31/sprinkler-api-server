@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EndpointLocationDto {
+
   private String name;
   private String latitude;
   private String longitude;

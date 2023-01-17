@@ -17,81 +17,83 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class EndpointService {
 
-    @Autowired
-    EndpointRepository endpointRepository;
+  @Autowired
+  EndpointRepository endpointRepository;
 
-    WebClient client = WebClient.create("http://192.168.88.200/?led=off");
+  WebClient client = WebClient.create("http://192.168.88.200/?led=off");
 
 
-    public String turnOffLed(String name) {
-        String endpointAddress = endpointRepository.findEndpointByName(name).getAddress();
-        try {
-            URL url = new URL("http://" + endpointAddress + "/?relay=off");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.getResponseCode();
-            System.out.println("test");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (ConnectException e){
-            return "Endpoint doesn't respond";
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return "Turned off led";
-
+  public String turnOffLed(String name) {
+    String endpointAddress = endpointRepository.findEndpointByName(name).getAddress();
+    try {
+      URL url = new URL("http://" + endpointAddress + "/?relay=off");
+      HttpURLConnection con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("GET");
+      con.getResponseCode();
+      System.out.println("test");
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    } catch (ConnectException e) {
+      return "Endpoint doesn't respond";
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+    return "Turned off led";
 
-    public String turnOnLed(String name) {
-        String endpointAddress = endpointRepository.findEndpointByName(name).getAddress();
-        try {
-            URL url = new URL("http://" + endpointAddress + "/?relay=on");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.getResponseCode();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (ConnectException e){
-            return "Endpoint doesn't respond";
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return "Turned off led";
-    }
+  }
 
-    @Transactional
-    public String addEndpoint(String name, String address, String city) {
-        var endpointLocation = getCoordinates(city);
-        return endpointRepository.save(Endpoint.builder()
-            .name(name)
-            .address(address)
-            .city(city)
-            .latitude(endpointLocation.getX())
-            .longitude(endpointLocation.getY())
-            .build()).toString();
+  public String turnOnLed(String name) {
+    String endpointAddress = endpointRepository.findEndpointByName(name).getAddress();
+    try {
+      URL url = new URL("http://" + endpointAddress + "/?relay=on");
+      HttpURLConnection con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("GET");
+      con.getResponseCode();
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    } catch (ConnectException e) {
+      return "Endpoint doesn't respond";
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+    return "Turned off led";
+  }
 
-    public String getEndpoint(String name) {
-        return endpointRepository.findEndpointByName(name).toString();
-    }
-    @Transactional
-    public void deleteEndpoint(String name) {
-        endpointRepository.deleteByName(name);
-    }
+  @Transactional
+  public String addEndpoint(String name, String address, String city) {
+    var endpointLocation = getCoordinates(city);
+    return endpointRepository.save(Endpoint.builder()
+        .name(name)
+        .address(address)
+        .city(city)
+        .latitude(endpointLocation.getX())
+        .longitude(endpointLocation.getY())
+        .build()).toString();
+  }
 
-    public String getEndpoints() {
-        return endpointRepository.findAll().toString();
-    }
+  public String getEndpoint(String name) {
+    return endpointRepository.findEndpointByName(name).toString();
+  }
 
-    private Point getCoordinates(String city) {
-        WebClient client = WebClient.builder()
-            .defaultHeader("X-Api-Key","CxtK5Aq0lPJt1FR+o+NDAQ==HneU0PTvhzAxmk44")
-            .build();
-        var responseSpec = client.get()
-            .uri("https://api.api-ninjas.com/v1/geocoding?city=" + city)
-            .retrieve()
-            .bodyToFlux(EndpointLocationDto.class)
-            .blockFirst();
-        return new Point(Double.parseDouble(responseSpec.getLatitude()), Double.parseDouble(responseSpec.getLongitude()));
-    }
+  @Transactional
+  public void deleteEndpoint(String name) {
+    endpointRepository.deleteByName(name);
+  }
+
+  public String getEndpoints() {
+    return endpointRepository.findAll().toString();
+  }
+
+  private Point getCoordinates(String city) {
+    WebClient client = WebClient.builder()
+        .defaultHeader("X-Api-Key", "CxtK5Aq0lPJt1FR+o+NDAQ==HneU0PTvhzAxmk44")
+        .build();
+    var responseSpec = client.get()
+        .uri("https://api.api-ninjas.com/v1/geocoding?city=" + city)
+        .retrieve()
+        .bodyToFlux(EndpointLocationDto.class)
+        .blockFirst();
+    return new Point(Double.parseDouble(responseSpec.getLatitude()),
+        Double.parseDouble(responseSpec.getLongitude()));
+  }
 }

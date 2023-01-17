@@ -1,13 +1,14 @@
 package com.example.sprinkler.apiserver.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.DayOfWeek;
-import java.time.LocalTime;
 
 @Data
 @Builder
@@ -15,21 +16,21 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EndpointSchedule {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Integer id;
 
-        @ManyToOne
-        private Endpoint endpoint;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-        private String hour;
+  @ManyToOne
+  private Endpoint endpoint;
 
-        private String minute;
+  private String hour;
 
-        private String day;
+  private String minute;
 
-        private Integer taskId;
+  private String day;
 
+  private Integer taskId;
 
 
 }
