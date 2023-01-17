@@ -1,5 +1,6 @@
 package com.example.sprinkler.apiserver.services;
 
+import com.example.sprinkler.apiserver.dtos.AddEndpointDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
 import java.io.IOException;
@@ -57,14 +58,15 @@ public class EndpointService {
   }
 
   @Transactional
-  public String addEndpoint(String name, String address, String city) {
-    var endpointLocation = coordinatesService.getCoordinates(city);
+  public String addEndpoint(AddEndpointDto addEndpointDto) {
+    var endpointLocation = coordinatesService.getCoordinates(addEndpointDto.getCity());
     return endpointRepository.save(Endpoint.builder()
-        .name(name)
-        .address(address)
-        .city(city)
+        .name(addEndpointDto.getName())
+        .address(addEndpointDto.getAddress())
+        .city(addEndpointDto.getCity())
         .latitude(endpointLocation.getX())
         .longitude(endpointLocation.getY())
+        .expectedMinimalWatering(addEndpointDto.getExpectedMinimalWatering())
         .build()).toString();
   }
 

@@ -1,12 +1,15 @@
 package com.example.sprinkler.apiserver.controllers;
 
+import com.example.sprinkler.apiserver.dtos.AddEndpointDto;
 import com.example.sprinkler.apiserver.services.EndpointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,9 +30,8 @@ public class EndpointController {
   }
 
   @PostMapping("/add_endpoint")
-  public String addEndpoint(@RequestParam String name, @RequestParam String address,
-      @RequestParam String city) {
-    return endpointService.addEndpoint(name, address, city);
+  public String addEndpoint(@RequestBody AddEndpointDto addEndpointDto) {
+    return endpointService.addEndpoint(addEndpointDto);
   }
 
   @GetMapping("/get_endpoint")

@@ -32,5 +32,4 @@ public class EndpointSchedule {
 
   private Integer taskId;
 
-
 }

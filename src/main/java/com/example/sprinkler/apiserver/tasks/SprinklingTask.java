@@ -10,11 +10,12 @@ public class SprinklingTask implements Runnable {
 
   public SprinklingTask(String message, Endpoint endpoint) {
     this.message = message;
+    this.endpoint = endpoint;
   }
 
   @Override
   public void run() {
-    if (endpoint.getExpectedRainfall() > 15) {
+    if (endpoint.getExpectedRainfall() > endpoint.getExpectedMinimalWatering()) {
       System.out.println(
           new Date() + " Sprinkling task executed " + message + " on thread"
               + Thread.currentThread()

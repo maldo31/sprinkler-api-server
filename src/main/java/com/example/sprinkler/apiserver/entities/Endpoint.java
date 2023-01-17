@@ -26,6 +26,7 @@ public class Endpoint {
   private Double latitude;
   private Double longitude;
   private Double expectedRainfall;
+  private Double expectedMinimalWatering;
   private boolean flowMeter;
   private boolean moistureSensor;
   private boolean electroValve;

@@ -1,8 +1,10 @@
 package com.example.sprinkler.apiserver.services;
 
+import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
+import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +36,7 @@ public class ForecastService {
   public void getForecastScheduled() {
     var endpoints = endpointRepository.findAll();
     StreamSupport.stream(endpoints.spliterator(), true)
+        .filter(hasLatitude.and(hasLongitude))
         .forEach(endpoint -> endpoint.setExpectedRainfall(
             requestForecast(endpoint.getLatitude(), endpoint.getLongitude())));
     endpointRepository.saveAll(endpoints);
@@ -52,6 +55,8 @@ public class ForecastService {
         .block();
   }
 
+  Predicate<Endpoint> hasLatitude = x -> x.getLatitude() != null;
+  Predicate<Endpoint> hasLongitude = x -> x.getLongitude() != null;
 
   public <T> void dump(T[] table) {
     for (T t : table) {
