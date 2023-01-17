@@ -11,6 +11,9 @@ spring:
     url: "jdbc:postgresql://localhost:5432/sprinklerdatabase"
     username: postgres
     password: password
+  security:
+    user:
+      password: admin
 apiKeys:
   geo: "CxtK5Aq0lPJt1FR+o+NDAQ==HneU0PTvhzAxmk44"
   #https://api.openweathermap.org
