@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
 import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,11 +16,14 @@ public class ForecastService {
   @Autowired
   EndpointRepository endpointRepository;
 
+  @Value("${apiKeys.forecast")
+  private String forecastKey;
+
   public String getForecast(String city) {
     WebClient client = WebClient.create();
     var responseSpec = client.get()
         .uri("https://api.openweathermap.org/data/2.5/forecast?q=" + city
-            + "&appid=de338ff9b1c030f6106b720bd64c0821")
+            + forecastKey)
         .retrieve()
         .bodyToMono(String.class);
     return responseSpec.block();

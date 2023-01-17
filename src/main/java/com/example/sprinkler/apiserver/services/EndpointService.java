@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,6 +20,11 @@ public class EndpointService {
 
   @Autowired
   EndpointRepository endpointRepository;
+
+  @Autowired
+  CoordinatesService coordinatesService;
+
+  @Value("{apiKeys.}")
 
   WebClient client = WebClient.create("http://192.168.88.200/?led=off");
 
@@ -61,7 +67,7 @@ public class EndpointService {
 
   @Transactional
   public String addEndpoint(String name, String address, String city) {
-    var endpointLocation = getCoordinates(city);
+    var endpointLocation = coordinatesService.getCoordinates(city);
     return endpointRepository.save(Endpoint.builder()
         .name(name)
         .address(address)
