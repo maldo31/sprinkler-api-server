@@ -25,6 +25,7 @@ public class ForecastService {
     return responseSpec.block();
   }
 
+  // At second :00, every 5 minutes starting at minute :00, of every hour
   @Scheduled(cron = "0 0/5 * * * ?")
   public void getForecastScheduled() {
     var endpoints = endpointRepository.findAll();
@@ -45,7 +46,6 @@ public class ForecastService {
         .bodyToMono(JsonNode.class)
         .map(s -> s.at("/daily/rain_sum").get(0).asDouble())
         .block();
-
   }
 
 

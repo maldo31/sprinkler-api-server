@@ -32,21 +32,6 @@ public class EndpointScheduleService {
 
   int taskId = 0;
 
-//  public String addSchedule(Integer id, String sprinklingHour, String sprinklingMinute,
-//      Integer dayOfWeek) {
-//    var endpoint = endpointRepository.findById(id).orElseThrow();
-//    LocalTime sprinklingTime = LocalTime.of(Integer.parseInt(sprinklingHour),
-//        Integer.parseInt(sprinklingMinute));
-//    var endpointSchedule = EndpointSchedule.builder()
-//        .sprinklingTime(sprinklingTime)
-//        .endpoint(endpoint)
-//        .dayOfWeek(DayOfWeek.of(dayOfWeek))
-//        .zone("GMT")
-//        .build();
-//    endpointScheduleRepository.save(endpointSchedule);
-//    return "ok";
-//  }
-
   public String getSchedulesForEndpoint(String endpointName) {
     return endpointScheduleRepository.findEndpointScheduleByEndpointName(endpointName).toString();
   }
@@ -55,16 +40,12 @@ public class EndpointScheduleService {
     return endpointScheduleRepository.findAll().toString();
   }
 
-  public String scheduleTask(Integer period, String text) {
-    return scheduler.scheduleAtFixedRate(new SprinklingTask(text), period).toString();
-  }
-
   public String scheduleCronTask(AddSprinklingTaskDto addSprinklingTaskDto, String text) {
+    var endpoint = endpointRepository.findById(addSprinklingTaskDto.getEndpointId()).orElseThrow();
     CronTrigger cronTrigger = new CronTrigger(executionDateToCronExpression(addSprinklingTaskDto));
-    ScheduledFuture<?> scheduledTask = scheduler.schedule(new SprinklingTask(text), cronTrigger);
+    ScheduledFuture<?> scheduledTask = scheduler.schedule(new SprinklingTask(text,endpoint), cronTrigger);
     tasksMap.put(taskId, scheduledTask);
 
-    var endpoint = endpointRepository.findById(addSprinklingTaskDto.getEndpointId()).orElseThrow();
     var endpointSchedule = EndpointSchedule.builder()
         .endpoint(endpoint)
         .day(addSprinklingTaskDto.getDay())

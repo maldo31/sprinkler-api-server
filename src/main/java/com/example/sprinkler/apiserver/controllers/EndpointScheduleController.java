@@ -29,11 +29,6 @@ public class EndpointScheduleController {
 
   }
 
-  @PostMapping("/schedule_task")
-  public String scheduleTask(@RequestParam Integer period, @RequestParam String text) {
-    return endpointScheduleService.scheduleTask(period, text);
-  }
-
   @PostMapping("/schedule_cron_task")
   public String scheduleTask(@RequestParam String text,
       @RequestBody AddSprinklingTaskDto addSprinklingTaskDto) {

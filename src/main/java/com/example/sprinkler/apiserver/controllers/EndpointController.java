@@ -47,6 +47,4 @@ public class EndpointController {
     endpointService.deleteEndpoint(name);
     return "deleted endpoint";
   }
-
-
 }
