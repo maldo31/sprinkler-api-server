@@ -5,6 +5,8 @@ import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,6 +23,9 @@ public class EndpointService {
 
     @Autowired
     CoordinatesService coordinatesService;
+
+    @Autowired
+    UsersService usersService;
 
     public String turnOffLed(String name) {
         String endpointAddress = endpointRepository.findEndpointByName(name).getAddress();
@@ -59,6 +64,8 @@ public class EndpointService {
 
     @Transactional
     public String addEndpoint(AddEndpointDto addEndpointDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String login = authentication.getName();
         var endpointLocation = coordinatesService.getCoordinates(addEndpointDto.getCity());
         return endpointRepository.save(Endpoint.builder()
                 .name(addEndpointDto.getName())
@@ -67,6 +74,7 @@ public class EndpointService {
                 .latitude(endpointLocation.getX())
                 .longitude(endpointLocation.getY())
                 .expectedMinimalWatering(addEndpointDto.getExpectedMinimalWatering())
+                .user(usersService.getUserByUsername(login))
                 .build()).toString();
     }
 

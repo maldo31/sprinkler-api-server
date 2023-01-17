@@ -28,6 +28,8 @@ public class Endpoint {
   private boolean flowMeter;
   private boolean moistureSensor;
   private boolean electroValve;
+  @ManyToOne
+  private User user;
 
 
 }
