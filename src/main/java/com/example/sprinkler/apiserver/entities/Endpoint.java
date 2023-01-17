@@ -1,11 +1,14 @@
 package com.example.sprinkler.apiserver.entities;
 
 
+import com.example.sprinkler.apiserver.dtos.EndpointResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.security.Principal;
 
 @Entity
 @Data
@@ -30,6 +33,24 @@ public class Endpoint {
   private boolean electroValve;
   @ManyToOne
   private User user;
+
+  public boolean isOwner(Principal principal){
+    return this.user.getEmail().equals(((User)principal).getEmail());
+  }
+
+  public EndpointResponseDto toEndpointResponseDto(){
+    return EndpointResponseDto.builder()
+            .id(id)
+            .address(name)
+            .city(city)
+            .expectedRainfall(expectedRainfall)
+            .expectedMinimalWatering(expectedMinimalWatering)
+            .flowMeter(flowMeter)
+            .moistureSensor(moistureSensor)
+            .electroValve(electroValve)
+            .owner(user.getEmail())
+            .build();
+  }
 
 
 }

@@ -1,13 +1,18 @@
 package com.example.sprinkler.apiserver.repositories;
 
 import com.example.sprinkler.apiserver.entities.Endpoint;
+import com.example.sprinkler.apiserver.entities.User;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
+import java.util.Optional;
 
 
 public interface EndpointRepository extends CrudRepository<Endpoint, Integer> {
 
-  Endpoint findEndpointByName(String name);
+  Optional<Endpoint> findEndpointByNameAndUser(String name, User user);
 
-  long deleteByName(String name);
+  void deleteByNameAndUser(String name, User user);
+
+  List<Endpoint> findAllByUser(User user);
 }
