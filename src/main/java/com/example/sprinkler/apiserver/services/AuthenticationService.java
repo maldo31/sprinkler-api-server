@@ -5,6 +5,7 @@ import com.example.sprinkler.apiserver.dtos.AuthenticationResponseDto;
 import com.example.sprinkler.apiserver.dtos.RegisterRequestDto;
 import com.example.sprinkler.apiserver.entities.Role;
 import com.example.sprinkler.apiserver.entities.User;
+import com.example.sprinkler.apiserver.exceptions.UserAlreadyExistException;
 import com.example.sprinkler.apiserver.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +22,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponseDto register(RegisterRequestDto request) {
+    public AuthenticationResponseDto register(RegisterRequestDto request) throws UserAlreadyExistException {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new UserAlreadyExistException("User with this email already exists:  " + request.getEmail());
+
+        }
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())

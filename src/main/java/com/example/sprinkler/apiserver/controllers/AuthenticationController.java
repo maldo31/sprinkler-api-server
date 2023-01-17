@@ -3,9 +3,11 @@ package com.example.sprinkler.apiserver.controllers;
 import com.example.sprinkler.apiserver.dtos.AuthenticationRequestDto;
 import com.example.sprinkler.apiserver.dtos.AuthenticationResponseDto;
 import com.example.sprinkler.apiserver.dtos.RegisterRequestDto;
+import com.example.sprinkler.apiserver.exceptions.UserAlreadyExistException;
 import com.example.sprinkler.apiserver.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,10 +22,14 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDto> register(
+    public ResponseEntity<?> register(
             @RequestBody RegisterRequestDto request
     ){
-        return ResponseEntity.ok(authenticationService.register(request));
+        try {
+            return ResponseEntity.ok(authenticationService.register(request));
+        } catch (UserAlreadyExistException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
 
     }
 
