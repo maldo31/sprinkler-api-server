@@ -22,11 +22,13 @@ public class EndpointSchedule {
         @ManyToOne
         private Endpoint endpoint;
 
-        private String zone;
+        private String hour;
 
-        private LocalTime sprinklingTime;
+        private String minute;
 
-        private DayOfWeek dayOfWeek;
+        private String day;
+
+        private Integer taskId;
 
 
 

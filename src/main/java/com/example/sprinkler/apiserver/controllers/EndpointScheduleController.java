@@ -1,5 +1,6 @@
 package com.example.sprinkler.apiserver.controllers;
 
+import com.example.sprinkler.apiserver.dtos.AddSprinklingTaskDto;
 import com.example.sprinkler.apiserver.services.EndpointScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +12,10 @@ public class EndpointScheduleController {
     @Autowired
     EndpointScheduleService endpointScheduleService;
 
-    @PostMapping("/add_schedule")
-    public String addSchedule(@RequestParam Integer id, @RequestParam String sprinklingHour, @RequestParam String sprinklingMinute, @RequestParam Integer dayOfWeek) {
-        return endpointScheduleService.addSchedule(id, sprinklingHour, sprinklingMinute, dayOfWeek);
-    }
+//    @PostMapping("/add_schedule")
+//    public String addSchedule(@RequestParam Integer id, @RequestParam String sprinklingHour, @RequestParam String sprinklingMinute, @RequestParam Integer dayOfWeek) {
+//        return endpointScheduleService.addSchedule(id, sprinklingHour, sprinklingMinute, dayOfWeek);
+//    }
 
     @GetMapping("/get_schedules")
     public String getSchedules(){
@@ -30,6 +31,16 @@ public class EndpointScheduleController {
     @PostMapping("/schedule_task")
     public String scheduleTask(@RequestParam Integer period, @RequestParam String text){
         return endpointScheduleService.scheduleTask(period,text);
+    }
+
+    @PostMapping("/schedule_cron_task")
+    public String scheduleTask(@RequestParam String text, @RequestBody AddSprinklingTaskDto addSprinklingTaskDto){
+        return endpointScheduleService.scheduleCronTask(addSprinklingTaskDto, text);
+    }
+
+    @DeleteMapping("/delete_schedule")
+    public String deleteTask(@RequestParam Integer taskId){
+        return endpointScheduleService.removeScheduledTask(taskId);
     }
 
 }

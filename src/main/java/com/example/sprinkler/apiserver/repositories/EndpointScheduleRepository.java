@@ -10,4 +10,5 @@ import java.util.List;
 @RepositoryRestResource
 public interface EndpointScheduleRepository extends CrudRepository<EndpointSchedule,Integer> {
     List<EndpointSchedule> findEndpointScheduleByEndpointName(String endpointName);
+    EndpointSchedule findEndpointScheduleByTaskId(Integer taskId);
 }
