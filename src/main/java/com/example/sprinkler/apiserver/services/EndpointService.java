@@ -121,6 +121,11 @@ public class EndpointService {
                 .build()).toString();
     }
 
+    @Transactional
+    public String registerEndpoint(String address){
+        return endpointRepository.save(Endpoint.builder().address(address).build()).toString();
+    }
+
     public Endpoint getEndpoint(String name, Authentication authentication) throws NoSuchEndpointException {
         return endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication)).orElseThrow(NoSuchEndpointException::new);
     }

@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/auth/**",
+                        "/UNSECURED/**",
                         "/v2/api-docs",
                         "/swagger-resources",
                         "/swagger-resources/**",
