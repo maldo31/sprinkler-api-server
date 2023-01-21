@@ -2,8 +2,8 @@ package com.example.sprinkler.apiserver.services;
 
 import com.example.sprinkler.apiserver.dtos.AddEndpointDto;
 import com.example.sprinkler.apiserver.dtos.ApiCallDto;
+import com.example.sprinkler.apiserver.dtos.ExecuteSprinklingDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
-import com.example.sprinkler.apiserver.entities.User;
 import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
 import jakarta.transaction.Transactional;
@@ -34,7 +34,7 @@ public class EndpointService {
     UsersService usersService;
 
     public String relayOn(String name, Authentication authentication) {
-        var endpoint = endpointRepository.findEndpointByNameAndUser(name, getUserFromAuthentication(authentication));
+        var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
         if (endpoint.isPresent()) {
             Map<String, Integer> jsonMap = new HashMap<>();
             jsonMap.put("relay", 0);
@@ -58,7 +58,7 @@ public class EndpointService {
     }
 
     public String relayOff(String name, Authentication authentication) {
-        var endpoint = endpointRepository.findEndpointByNameAndUser(name, getUserFromAuthentication(authentication));
+        var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
         if (endpoint.isPresent()) {
             Map<String, Integer> jsonMap = new HashMap<>();
             jsonMap.put("relay", 1);
@@ -77,6 +77,16 @@ public class EndpointService {
         jsonMap.put("relay", 1);
         callEndpointApi(endpoint, ApiCallDto.builder()
                 .path("/relay")
+                .jsonBody(jsonMap)
+                .build());
+    }
+
+
+    public void sprinkleWithDuration(ExecuteSprinklingDto executeSprinklingDto, Authentication authentication) throws NoSuchEndpointException {
+        Map<String, Long> jsonMap = new HashMap<>();
+        jsonMap.put("duration", executeSprinklingDto.getDuration().getSeconds());
+        callEndpointApi(endpointRepository.findEndpointByNameAndUser(executeSprinklingDto.getEndpointName(), usersService.getUserFromAuthentication(authentication)).orElseThrow(NoSuchEndpointException::new), ApiCallDto.builder()
+                .path("/sprinkle")
                 .jsonBody(jsonMap)
                 .build());
     }
@@ -107,25 +117,21 @@ public class EndpointService {
                 .latitude(endpointLocation.getX())
                 .longitude(endpointLocation.getY())
                 .expectedMinimalWatering(addEndpointDto.getExpectedMinimalWatering())
-                .user(getUserFromAuthentication(authentication))
+                .user(usersService.getUserFromAuthentication(authentication))
                 .build()).toString();
     }
 
     public Endpoint getEndpoint(String name, Authentication authentication) throws NoSuchEndpointException {
-        return endpointRepository.findEndpointByNameAndUser(name, getUserFromAuthentication(authentication)).orElseThrow(NoSuchEndpointException::new);
+        return endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication)).orElseThrow(NoSuchEndpointException::new);
     }
 
     @Transactional
     public void deleteEndpoint(String name, Authentication authentication) {
-        endpointRepository.deleteByNameAndUser(name, getUserFromAuthentication(authentication));
+        endpointRepository.deleteByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
     }
 
     public List<Endpoint> getEndpoints(Authentication authentication) {
-        return endpointRepository.findAllByUser(getUserFromAuthentication(authentication));
-    }
-
-    private User getUserFromAuthentication(Authentication authentication) {
-        return usersService.getUserByUsername(authentication.getName());
+        return endpointRepository.findAllByUser(usersService.getUserFromAuthentication(authentication));
     }
 
 }

@@ -20,21 +20,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "gpio")
+@RequestMapping(value = "endpoint")
 public class EndpointController {
 
   @Autowired
   EndpointService endpointService;
-
-  @GetMapping("/relay-off")
-  public String relayOff(@RequestParam String name, Authentication authentication) {
-        return endpointService.relayOff(name,authentication);
-  }
-
-  @GetMapping("/relay-on")
-  public String turnLedOff(@RequestParam String name, Authentication authentication) {
-    return endpointService.relayOn(name,authentication);
-  }
 
   @PostMapping("/add_endpoint")
   public String addEndpoint(@RequestBody AddEndpointDto addEndpointDto) {

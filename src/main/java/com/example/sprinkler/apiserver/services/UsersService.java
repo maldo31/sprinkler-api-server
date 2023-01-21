@@ -21,7 +21,7 @@ public class UsersService {
         userRepository.delete(getUserFromAuthentication(authentication));
     }
 
-    private User getUserFromAuthentication(Authentication authentication) {
+    public User getUserFromAuthentication(Authentication authentication) {
         return getUserByUsername(authentication.getName());
     }
 

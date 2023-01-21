@@ -34,7 +34,7 @@ public class SprinklingTask implements Runnable {
     }
 
     private void sprinkle(Endpoint endpoint, long sprinklingTime) {
-        endpointService.relayOff(endpoint);
+        endpointService.relayOn(endpoint);
         try {
             Thread.sleep(sprinklingTime);
         } catch (InterruptedException e) {
