@@ -1,21 +1,25 @@
 package com.example.sprinkler.apiserver.services;
 
 import com.example.sprinkler.apiserver.dtos.AddEndpointDto;
+import com.example.sprinkler.apiserver.dtos.ApiCallDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.entities.User;
 import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @Service
 public class EndpointService {
@@ -29,43 +33,67 @@ public class EndpointService {
     @Autowired
     UsersService usersService;
 
-    public String turnOffLed(String name, Authentication authentication) {
+    public String relayOn(String name, Authentication authentication) {
         var endpoint = endpointRepository.findEndpointByNameAndUser(name, getUserFromAuthentication(authentication));
         if (endpoint.isPresent()) {
-            int x = callEndpointApi(endpoint.get(), "/?relay=off");
+            Map<String, Integer> jsonMap = new HashMap<>();
+            jsonMap.put("relay", 0);
+            int x = callEndpointApi(endpoint.get(), ApiCallDto.builder()
+                    .path("/relay")
+                    .jsonBody(jsonMap)
+                    .build());
             if (x != 200) return "Bad response";
             return "Turned Off led";
         }
         return "No such endpoint";
     }
 
-    public void turnOffLed(Endpoint endpoint) {
-        callEndpointApi(endpoint, "/?relay=off");
+    public void relayOn(Endpoint endpoint) {
+        Map<String, Integer> jsonMap = new HashMap<>();
+        jsonMap.put("relay", 0);
+        callEndpointApi(endpoint, ApiCallDto.builder()
+                .path("/relay")
+                .jsonBody(jsonMap)
+                .build());
     }
 
-    public String turnOnLed(String name, Authentication authentication) {
+    public String relayOff(String name, Authentication authentication) {
         var endpoint = endpointRepository.findEndpointByNameAndUser(name, getUserFromAuthentication(authentication));
         if (endpoint.isPresent()) {
-            int x = callEndpointApi(endpoint.get(), "/?relay=on");
+            Map<String, Integer> jsonMap = new HashMap<>();
+            jsonMap.put("relay", 1);
+            var x = callEndpointApi(endpoint.get(), ApiCallDto.builder()
+                    .path("/relay")
+                    .jsonBody(jsonMap)
+                    .build());
             if (x != 200) return "Bad response";
             return "Turned On led";
         }
         return "No such endpoint";
     }
 
-    public void turnOnLed(Endpoint endpoint) {
-        callEndpointApi(endpoint, "/?relay=off");
+    public void relayOff(Endpoint endpoint) {
+        Map<String, Integer> jsonMap = new HashMap<>();
+        jsonMap.put("relay", 1);
+        callEndpointApi(endpoint, ApiCallDto.builder()
+                .path("/relay")
+                .jsonBody(jsonMap)
+                .build());
     }
 
-    private int callEndpointApi(Endpoint endpoint, String apiCall) {
-        try {
-            URL url = new URL("http://" + endpoint.getAddress() + apiCall);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            return con.getResponseCode();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private int callEndpointApi(Endpoint endpoint, ApiCallDto apiCallDto) {
+
+        WebClient webClient = WebClient.create("http://" + endpoint.getAddress());
+
+
+        return webClient.post()
+                .uri(apiCallDto.getPath())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(BodyInserters.fromValue(apiCallDto.getJsonBody()))
+                .exchange()
+                .map(ClientResponse::statusCode)
+                .block()
+                .value();
     }
 
     @Transactional
@@ -89,7 +117,7 @@ public class EndpointService {
 
     @Transactional
     public void deleteEndpoint(String name, Authentication authentication) {
-        endpointRepository.deleteByNameAndUser(name,getUserFromAuthentication(authentication));
+        endpointRepository.deleteByNameAndUser(name, getUserFromAuthentication(authentication));
     }
 
     public List<Endpoint> getEndpoints(Authentication authentication) {

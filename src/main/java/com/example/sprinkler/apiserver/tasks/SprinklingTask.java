@@ -2,7 +2,6 @@ package com.example.sprinkler.apiserver.tasks;
 
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.services.EndpointService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
@@ -35,12 +34,12 @@ public class SprinklingTask implements Runnable {
     }
 
     private void sprinkle(Endpoint endpoint, long sprinklingTime) {
-        endpointService.turnOnLed(endpoint);
+        endpointService.relayOff(endpoint);
         try {
             Thread.sleep(sprinklingTime);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        endpointService.turnOffLed(endpoint);
+        endpointService.relayOn(endpoint);
     }
 }
