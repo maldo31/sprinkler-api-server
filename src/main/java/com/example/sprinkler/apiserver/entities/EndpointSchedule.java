@@ -26,6 +26,9 @@ public class EndpointSchedule {
 
   private String day;
 
+  @Column(columnDefinition = "boolean default true")
+  private Boolean smart;
+  
   private Integer taskId;
 
 }

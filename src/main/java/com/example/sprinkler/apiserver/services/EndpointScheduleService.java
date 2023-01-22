@@ -47,7 +47,7 @@ public class EndpointScheduleService {
     public String scheduleCronTask(AddSprinklingTaskDto addSprinklingTaskDto) {
         var endpoint = endpointRepository.findById(addSprinklingTaskDto.getEndpointId()).orElseThrow();
         CronTrigger cronTrigger = new CronTrigger(executionDateToCronExpression(addSprinklingTaskDto));
-        ScheduledFuture<?> scheduledTask = scheduler.schedule(new SprinklingTask(endpoint, addSprinklingTaskDto.getSprinklingDuration(), endpointService),
+        ScheduledFuture<?> scheduledTask = scheduler.schedule(new SprinklingTask(endpoint, addSprinklingTaskDto, endpointService),
                 cronTrigger);
         tasksMap.put(taskId, scheduledTask);
 
@@ -56,6 +56,7 @@ public class EndpointScheduleService {
                 .day(addSprinklingTaskDto.getDay())
                 .hour(addSprinklingTaskDto.getHour())
                 .minute(addSprinklingTaskDto.getMinute())
+                .smart(addSprinklingTaskDto.getSmart())
                 .taskId(taskId).build();
         endpointScheduleRepository.save(endpointSchedule);
         taskId += 1;

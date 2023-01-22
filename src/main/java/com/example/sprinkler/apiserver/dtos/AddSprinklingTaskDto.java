@@ -11,9 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AddSprinklingTaskDto {
 
-  private String minute;
+  private String minute = "00";
   private String hour;
   private String day;
   private Integer endpointId;
+  private Boolean smart = true;
   private long sprinklingDuration;
 }

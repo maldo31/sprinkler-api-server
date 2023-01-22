@@ -1,5 +1,6 @@
 package com.example.sprinkler.apiserver.tasks;
 
+import com.example.sprinkler.apiserver.dtos.AddSprinklingTaskDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.services.EndpointService;
 import lombok.RequiredArgsConstructor;
@@ -10,19 +11,19 @@ import java.util.Date;
 public class SprinklingTask implements Runnable {
 
     private final Endpoint endpoint;
-    private final long time;
+    private final AddSprinklingTaskDto addSprinklingTaskDto;
 
     final EndpointService endpointService;
 
 
     @Override
     public void run() {
-        if (endpoint.getExpectedRainfall() < endpoint.getExpectedMinimalWatering()) {
+        if (!addSprinklingTaskDto.getSmart() || endpoint.getExpectedRainfall() < endpoint.getExpectedMinimalWatering()) {
             System.out.println(
                     new Date() + " Sprinkling task executed on thread"
                             + Thread.currentThread()
                             .getName());
-            sprinkle(endpoint, this.time);
+            sprinkle(endpoint, addSprinklingTaskDto.getSprinklingDuration());
             System.out.println(new Date() + "Sprinkling ended");
 
         } else {
