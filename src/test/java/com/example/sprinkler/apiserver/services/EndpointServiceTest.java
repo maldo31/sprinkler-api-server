@@ -3,6 +3,7 @@ package com.example.sprinkler.apiserver.services;
 import com.example.sprinkler.apiserver.dtos.AddEndpointDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.entities.User;
+import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,9 +13,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.geo.Point;
+import org.springframework.security.core.Authentication;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static reactor.core.publisher.Mono.when;
 
 @ExtendWith(MockitoExtension.class)
 class EndpointServiceTest {
@@ -22,6 +29,9 @@ class EndpointServiceTest {
     private EndpointRepository endpointRepository;
     @Mock
     private CoordinatesService coordinatesService;
+
+    @Mock
+    private Authentication authentication;
     @Mock
     private UsersService usersService;
 
@@ -67,7 +77,17 @@ class EndpointServiceTest {
     }
 
     @Test
-    void getEndpoint() {
+    void getEndpoints() {
+        List<Endpoint> expectedEndpoints =  Arrays.asList(new Endpoint(), new Endpoint());
+        //Given
+        var user = new User();
+        given(endpointRepository.findAllByUser(user)).willReturn(expectedEndpoints);
+        given(usersService.getUserFromAuthentication(authentication)).willReturn(user);
+
+        //When
+        var endpointsList = endpointService.getEndpoints(authentication);
+        //Then
+        Assertions.assertEquals(expectedEndpoints,endpointsList);
     }
 
     @Test
@@ -75,6 +95,17 @@ class EndpointServiceTest {
     }
 
     @Test
-    void getEndpoints() {
+    void getEndpoint() throws NoSuchEndpointException {
+        //Given
+        var user = new User();
+        var endpointName = "endpointName";
+        var expectedEndpoint = new Endpoint();
+        given(endpointRepository.findEndpointByNameAndUser(endpointName,user)).willReturn(Optional.of(expectedEndpoint));
+        given(usersService.getUserFromAuthentication(authentication)).willReturn(user);
+
+        //When
+        var returnedEndpoint = endpointService.getEndpoint(endpointName,authentication);
+        //Then
+        Assertions.assertEquals(expectedEndpoint,returnedEndpoint);
     }
 }
