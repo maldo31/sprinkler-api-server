@@ -107,7 +107,7 @@ public class EndpointService {
     }
 
     @Transactional
-    public String addEndpoint(AddEndpointDto addEndpointDto) {
+    public Endpoint addEndpoint(AddEndpointDto addEndpointDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         var endpointLocation = coordinatesService.getCoordinates(addEndpointDto.getCity());
         return endpointRepository.save(Endpoint.builder()
@@ -118,7 +118,7 @@ public class EndpointService {
                 .longitude(endpointLocation.getY())
                 .expectedMinimalWatering(addEndpointDto.getExpectedMinimalWatering())
                 .user(usersService.getUserFromAuthentication(authentication))
-                .build()).toString();
+                .build());
     }
 
     @Transactional

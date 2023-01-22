@@ -27,8 +27,8 @@ public class EndpointController {
   EndpointService endpointService;
 
   @PostMapping("/add_endpoint")
-  public String addEndpoint(@RequestBody AddEndpointDto addEndpointDto) {
-    return endpointService.addEndpoint(addEndpointDto);
+  public ResponseEntity<Endpoint> addEndpoint(@RequestBody AddEndpointDto addEndpointDto) {
+    return ResponseEntity.ok().body(endpointService.addEndpoint(addEndpointDto));
   }
 
   @GetMapping("/get_endpoint")
