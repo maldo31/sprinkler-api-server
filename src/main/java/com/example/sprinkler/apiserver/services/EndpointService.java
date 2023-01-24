@@ -5,8 +5,10 @@ import com.example.sprinkler.apiserver.dtos.ApiCallDto;
 import com.example.sprinkler.apiserver.dtos.ExecuteSprinklingDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
+import com.example.sprinkler.apiserver.exceptions.WrongResponseFromEndpoint;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class EndpointService {
 
     @Autowired
@@ -33,7 +36,7 @@ public class EndpointService {
     @Autowired
     UsersService usersService;
 
-    public String relayOn(String name, Authentication authentication) {
+    public void relayOn(String name, Authentication authentication) throws WrongResponseFromEndpoint, NoSuchEndpointException {
         var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
         if (endpoint.isPresent()) {
             Map<String, Integer> jsonMap = new HashMap<>();
@@ -42,10 +45,9 @@ public class EndpointService {
                     .path("/relay")
                     .jsonBody(jsonMap)
                     .build());
-            if (x != 200) return "Bad response";
-            return "Turned Off led";
+            if (x != 200)  throw new WrongResponseFromEndpoint("Bad response from endpoint");
         }
-        return "No such endpoint";
+        throw new NoSuchEndpointException();
     }
 
     public void relayOn(Endpoint endpoint) {
@@ -57,7 +59,7 @@ public class EndpointService {
                 .build());
     }
 
-    public String relayOff(String name, Authentication authentication) {
+    public void relayOff(String name, Authentication authentication) throws NoSuchEndpointException, WrongResponseFromEndpoint {
         var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
         if (endpoint.isPresent()) {
             Map<String, Integer> jsonMap = new HashMap<>();
@@ -66,10 +68,11 @@ public class EndpointService {
                     .path("/relay")
                     .jsonBody(jsonMap)
                     .build());
-            if (x != 200) return "Bad response";
-            return "Turned On led";
+            if (x != 200) {
+               throw new WrongResponseFromEndpoint("Bad response from endpoint");
+            }
         }
-        return "No such endpoint";
+        throw new NoSuchEndpointException();
     }
 
     public void relayOff(Endpoint endpoint) {

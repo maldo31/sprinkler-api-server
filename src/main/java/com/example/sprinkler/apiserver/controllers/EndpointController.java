@@ -5,6 +5,7 @@ import com.example.sprinkler.apiserver.dtos.EndpointResponseDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.services.EndpointService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Slf4j
 @RequestMapping(value = "endpoint")
 public class EndpointController {
 
@@ -36,6 +38,7 @@ public class EndpointController {
     try {
       return ResponseEntity.ok(endpointService.getEndpoint(name,authentication).toEndpointResponseDto());
     } catch (NoSuchEndpointException e) {
+      log.error(e.getMessage());
       return ResponseEntity.notFound().build();
     }
   }

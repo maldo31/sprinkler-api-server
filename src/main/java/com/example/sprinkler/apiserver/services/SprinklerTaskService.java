@@ -1,9 +1,13 @@
 package com.example.sprinkler.apiserver.services;
 
 import com.example.sprinkler.apiserver.controllers.EndpointController;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
+@Slf4j
+@Service
 public class SprinklerTaskService {
 
   @Autowired
@@ -14,7 +18,7 @@ public class SprinklerTaskService {
   public void scheduleTaskUsingCronExpression() {
 
     long now = System.currentTimeMillis() / 1000;
-    System.out.println(
+    log.info(
         "schedule tasks using cron jobs - " + now);
   }
 }

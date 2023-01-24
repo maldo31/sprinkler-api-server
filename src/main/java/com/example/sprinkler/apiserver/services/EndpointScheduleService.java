@@ -6,6 +6,7 @@ import com.example.sprinkler.apiserver.entities.EndpointSchedule;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
 import com.example.sprinkler.apiserver.repositories.EndpointScheduleRepository;
 import com.example.sprinkler.apiserver.tasks.SprinklingTask;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -17,6 +18,7 @@ import java.util.concurrent.ScheduledFuture;
 
 
 @Service
+@Slf4j
 public class EndpointScheduleService {
 
     @Autowired
@@ -72,6 +74,7 @@ public class EndpointScheduleService {
                     endpointScheduleRepository.findEndpointScheduleByTaskId(taskId));
             return "Removed task: " + taskId;
         }
+        log.error("Couldn't remove task: " + taskId);
         return "Couldn't remove task: " + taskId;
     }
 
