@@ -41,7 +41,7 @@ public class SprinklingTask implements Runnable {
         try {
             Thread.sleep(sprinklingTime);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage());
         }
         endpointService.relayOn(endpoint);
     }
