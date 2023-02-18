@@ -19,7 +19,7 @@ public class SprinklingController {
     @Autowired
     EndpointService endpointService;
 
-    @GetMapping("/relay-off")
+    @GetMapping("/relayOff")
     public ResponseEntity<?> relayOff(@RequestParam String name, Authentication authentication) {
         try {
             endpointService.relayOff(name,authentication);
@@ -31,7 +31,7 @@ public class SprinklingController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/relay-on")
+    @GetMapping("/relayOn")
     public ResponseEntity<?> turnLedOff(@RequestParam String name, Authentication authentication) {
         try {
             endpointService.relayOn(name,authentication);
@@ -43,11 +43,22 @@ public class SprinklingController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping("/execute_sprinklig")
+    @PostMapping("/executeSprinklig")
     public ResponseEntity<?> executeSprinkling(@RequestBody ExecuteSprinklingDto executeSprinklingDto, Authentication authentication){
         try {
             endpointService.sprinkleWithDuration(executeSprinklingDto,authentication);
             return ResponseEntity.ok().build();
+        } catch (NoSuchEndpointException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
+    @GetMapping("/getMoisture")
+    public ResponseEntity<?> getMoisture(@RequestParam String name, Authentication authentication){
+        try {
+            var endpointResponse = endpointService.getMoisture(name,authentication);
+            return ResponseEntity.ok().body(endpointResponse);
         } catch (NoSuchEndpointException e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);

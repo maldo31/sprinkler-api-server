@@ -45,7 +45,8 @@ public class Endpoint {
     public EndpointResponseDto toEndpointResponseDto() {
         return EndpointResponseDto.builder()
                 .id(id)
-                .address(name)
+                .name(name)
+                .address(address)
                 .city(city)
                 .expectedRainfall(expectedRainfall)
                 .expectedMinimalWatering(expectedMinimalWatering)
@@ -57,4 +58,7 @@ public class Endpoint {
     }
 
 
+    public Double getSoilMoisture() {
+        return 0.3;
+    }
 }

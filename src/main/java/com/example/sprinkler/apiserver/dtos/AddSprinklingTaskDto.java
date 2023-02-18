@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AddSprinklingTaskDto {
 
-  private String minute = "00";
+    public Integer waterQuantiny;
+    private String minute = "00";
   private String hour;
   private String day;
   private Integer endpointId;

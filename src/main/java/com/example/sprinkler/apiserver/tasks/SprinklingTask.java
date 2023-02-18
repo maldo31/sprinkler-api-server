@@ -17,16 +17,23 @@ public class SprinklingTask implements Runnable {
 
     final EndpointService endpointService;
 
-
     @Override
     public void run() {
-        if (!addSprinklingTaskDto.getSmart() || endpoint.getExpectedRainfall() < endpoint.getExpectedMinimalWatering()) {
+        if (!addSprinklingTaskDto.getSmart() ||
+                endpoint.getExpectedRainfall() < endpoint.getExpectedMinimalWatering() ||
+                endpoint.getSoilMoisture() < 0.6
+        ) {
             log.info(
                     new Date() + " Sprinkling task executed on thread"
                             + Thread.currentThread()
                             .getName());
-            sprinkle(endpoint, addSprinklingTaskDto.getSprinklingDuration());
-            log.info(new Date() + "Sprinkling ended");
+            if (addSprinklingTaskDto.waterQuantiny != null) {
+                sprinkle(endpoint, addSprinklingTaskDto.waterQuantiny);
+            } else {
+                sprinkle(endpoint, addSprinklingTaskDto.getSprinklingDuration());
+            }
+
+            log.info(new Date() + "Sprinkling dispatched to sprinkler");
 
         } else {
             log.info(
@@ -40,6 +47,16 @@ public class SprinklingTask implements Runnable {
         endpointService.relayOn(endpoint);
         try {
             Thread.sleep(sprinklingTime);
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+        }
+        endpointService.relayOn(endpoint);
+    }
+
+    private void sprinkle(Endpoint endpoint, Integer waterQuantity) {
+        endpointService.relayOn(endpoint);
+        try {
+            Thread.sleep(waterQuantity);
         } catch (InterruptedException e) {
             log.error(e.getMessage());
         }

@@ -45,7 +45,7 @@ public class EndpointService {
                     .path("/relay")
                     .jsonBody(jsonMap)
                     .build());
-            if (x != 200)  throw new WrongResponseFromEndpoint("Bad response from endpoint");
+            if (x != 200) throw new WrongResponseFromEndpoint("Bad response from endpoint");
         }
         throw new NoSuchEndpointException();
     }
@@ -69,7 +69,7 @@ public class EndpointService {
                     .jsonBody(jsonMap)
                     .build());
             if (x != 200) {
-               throw new WrongResponseFromEndpoint("Bad response from endpoint");
+                throw new WrongResponseFromEndpoint("Bad response from endpoint");
             }
         }
         throw new NoSuchEndpointException();
@@ -109,6 +109,19 @@ public class EndpointService {
                 .value();
     }
 
+    private String callApiGetResponse(Endpoint endpoint, ApiCallDto apiCallDto) {
+
+        WebClient webClient = WebClient.create("http://" + endpoint.getAddress());
+
+
+        return webClient.get()
+                .uri(apiCallDto.getPath())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+    }
+
     @Transactional
     public Endpoint addEndpoint(AddEndpointDto addEndpointDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -125,7 +138,7 @@ public class EndpointService {
     }
 
     @Transactional
-    public String registerEndpoint(String address){
+    public String registerEndpoint(String address) {
         return endpointRepository.save(Endpoint.builder().address(address).build()).toString();
     }
 
@@ -142,4 +155,17 @@ public class EndpointService {
         return endpointRepository.findAllByUser(usersService.getUserFromAuthentication(authentication));
     }
 
+    public String getMoisture(String name, Authentication authentication) throws NoSuchEndpointException {
+        var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
+        if (endpoint.isPresent()) {
+            Map<String, Integer> jsonMap = new HashMap<>();
+            jsonMap.put("relay", 1);
+            var jsonResponse = callApiGetResponse(endpoint.get(), ApiCallDto.builder()
+                    .path("/moisture")
+                    .build());
+            return jsonResponse;
+        } else {
+            throw new NoSuchEndpointException();
+        }
+    }
 }

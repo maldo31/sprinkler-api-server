@@ -25,8 +25,8 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/**",
-                        "/UNSECURED/**",
+                .requestMatchers("/auth/authenticate",
+                        "/auth/register",
                         "/v2/api-docs",
                         "/swagger-resources",
                         "/swagger-resources/**",
@@ -46,7 +46,6 @@ public class SecurityConfig {
                 .and()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
 
         return http.build();
     }

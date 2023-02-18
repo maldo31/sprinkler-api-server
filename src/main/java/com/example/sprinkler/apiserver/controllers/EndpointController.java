@@ -28,12 +28,12 @@ public class EndpointController {
   @Autowired
   EndpointService endpointService;
 
-  @PostMapping("/add_endpoint")
+  @PostMapping("/addEndpoint")
   public ResponseEntity<Endpoint> addEndpoint(@RequestBody AddEndpointDto addEndpointDto) {
     return ResponseEntity.ok().body(endpointService.addEndpoint(addEndpointDto));
   }
 
-  @GetMapping("/get_endpoint")
+  @GetMapping("/getEndpoint")
   public ResponseEntity<?> getEndpoint(@RequestParam String name, Authentication authentication) {
     try {
       return ResponseEntity.ok(endpointService.getEndpoint(name,authentication).toEndpointResponseDto());
@@ -43,14 +43,15 @@ public class EndpointController {
     }
   }
 
-  @GetMapping("/get_endpoints")
+  @GetMapping("/getEndpoints")
   public List<EndpointResponseDto> getEndpoints(Authentication authentication) {
+
     return endpointService.getEndpoints(authentication).stream()
             .map(Endpoint::toEndpointResponseDto)
             .collect(Collectors.toList());
   }
 
-  @DeleteMapping("/delete_endpoint")
+  @DeleteMapping("/deleteEndpoint")
   public String deleteEndpoint(@RequestParam String name, Authentication authentication) {
     endpointService.deleteEndpoint(name, authentication);
     return "deleted endpoint";

@@ -18,23 +18,23 @@ public class EndpointScheduleController {
   @Autowired
   EndpointScheduleService endpointScheduleService;
 
-  @GetMapping("/get_schedules")
+  @GetMapping("/getSchedules")
   public String getSchedules() {
     return endpointScheduleService.getSchedules();
   }
 
-  @GetMapping("/get_schedules_for_endpoint")
+  @GetMapping("/getSchedulesForEndpoint")
   public String getSchedulesForEndpoint(@RequestParam String endpointName) {
     return endpointScheduleService.getSchedulesForEndpoint(endpointName);
 
   }
 
-  @PostMapping("/schedule_cron_task")
+  @PostMapping("/scheduleCronTask")
   public String scheduleTask(@RequestBody AddSprinklingTaskDto addSprinklingTaskDto) {
     return endpointScheduleService.scheduleCronTask(addSprinklingTaskDto);
   }
 
-  @DeleteMapping("/delete_schedule")
+  @DeleteMapping("/deleteSchedule")
   public String deleteTask(@RequestParam Integer taskId) {
     return endpointScheduleService.removeScheduledTask(taskId);
   }
