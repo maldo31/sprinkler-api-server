@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.service.annotation.PostExchange;
 
 @RestController
 @RequestMapping(value = "sprinkler")
@@ -60,6 +61,20 @@ public class SprinklingController {
             var endpointResponse = endpointService.getMoisture(name,authentication);
             return ResponseEntity.ok().body(endpointResponse);
         } catch (NoSuchEndpointException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
+    @PostMapping("/setMoistureSensor")
+    public ResponseEntity<?> setMoistureSensor(@RequestParam String name, @RequestParam Boolean takeSensorIntoAccount, Authentication authentication){
+        try {
+             endpointService.setTakeSensorIntoAccount(name,takeSensorIntoAccount,authentication);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (NoSuchEndpointException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        } catch (WrongResponseFromEndpoint e) {
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }

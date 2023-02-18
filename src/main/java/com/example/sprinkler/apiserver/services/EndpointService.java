@@ -116,7 +116,6 @@ public class EndpointService {
 
         return webClient.get()
                 .uri(apiCallDto.getPath())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
@@ -165,6 +164,23 @@ public class EndpointService {
                     .build());
             return jsonResponse;
         } else {
+            throw new NoSuchEndpointException();
+        }
+    }
+
+    public void setTakeSensorIntoAccount(String name,Boolean takeSensorIntoAccount, Authentication authentication) throws WrongResponseFromEndpoint, NoSuchEndpointException {
+        var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
+        if (endpoint.isPresent()) {
+            Map<String, Boolean> jsonMap = new HashMap<>();
+            jsonMap.put("moistureSensorEnabled", takeSensorIntoAccount);
+            var responseStatus = callEndpointApi(endpoint.get(), ApiCallDto.builder()
+                    .path("/sprinkleIfMoist")
+                    .jsonBody(jsonMap)
+                    .build());
+
+            if (responseStatus != 200) throw new WrongResponseFromEndpoint("Bad response from endpoint");
+        }
+        else {
             throw new NoSuchEndpointException();
         }
     }
