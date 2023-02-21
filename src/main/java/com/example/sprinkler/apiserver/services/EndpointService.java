@@ -7,7 +7,6 @@ import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.exceptions.WrongResponseFromEndpoint;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
-import io.netty.handler.codec.json.JsonObjectDecoder;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
@@ -40,17 +39,14 @@ public class EndpointService {
     UsersService usersService;
 
     public void relayOn(String name, Authentication authentication) throws WrongResponseFromEndpoint, NoSuchEndpointException {
-        var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
-        if (endpoint.isPresent()) {
-            Map<String, Integer> jsonMap = new HashMap<>();
-            jsonMap.put("relay", 0);
-            int x = callEndpointApi(endpoint.get(), ApiCallDto.builder()
-                    .path("/relay")
-                    .jsonBody(jsonMap)
-                    .build());
-            if (x != 200) throw new WrongResponseFromEndpoint("Bad response from endpoint");
-        }
-        throw new NoSuchEndpointException();
+        var endpoint = getEndpoint(name, authentication);
+        Map<String, Integer> jsonMap = new HashMap<>();
+        jsonMap.put("relay", 0);
+        int x = callEndpointApi(endpoint, ApiCallDto.builder()
+                .path("/relay")
+                .jsonBody(jsonMap)
+                .build());
+        if (x != 200) throw new WrongResponseFromEndpoint("Bad response from endpoint");
     }
 
     public void relayOn(Endpoint endpoint) {
@@ -63,19 +59,17 @@ public class EndpointService {
     }
 
     public void relayOff(String name, Authentication authentication) throws NoSuchEndpointException, WrongResponseFromEndpoint {
-        var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
-        if (endpoint.isPresent()) {
-            Map<String, Integer> jsonMap = new HashMap<>();
-            jsonMap.put("relay", 1);
-            var x = callEndpointApi(endpoint.get(), ApiCallDto.builder()
-                    .path("/relay")
-                    .jsonBody(jsonMap)
-                    .build());
-            if (x != 200) {
-                throw new WrongResponseFromEndpoint("Bad response from endpoint");
-            }
+        var endpoint = getEndpoint(name, authentication);
+
+        Map<String, Integer> jsonMap = new HashMap<>();
+        jsonMap.put("relay", 1);
+        var x = callEndpointApi(endpoint, ApiCallDto.builder()
+                .path("/relay")
+                .jsonBody(jsonMap)
+                .build());
+        if (x != 200) {
+            throw new WrongResponseFromEndpoint("Bad response from endpoint");
         }
-        throw new NoSuchEndpointException();
     }
 
     public void relayOff(Endpoint endpoint) {
@@ -98,9 +92,7 @@ public class EndpointService {
     }
 
     private int callEndpointApi(Endpoint endpoint, ApiCallDto apiCallDto) {
-
         WebClient webClient = WebClient.create("http://" + endpoint.getAddress());
-
 
         return webClient.post()
                 .uri(apiCallDto.getPath())
@@ -113,10 +105,7 @@ public class EndpointService {
     }
 
     private String callApiGetResponse(Endpoint endpoint, ApiCallDto apiCallDto) {
-
         WebClient webClient = WebClient.create("http://" + endpoint.getAddress());
-
-
         return webClient.get()
                 .uri(apiCallDto.getPath())
                 .retrieve()
@@ -158,17 +147,13 @@ public class EndpointService {
     }
 
     public String getMoistureForEndpoint(String name, Authentication authentication) throws NoSuchEndpointException {
-        var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
-        if (endpoint.isPresent()) {
-            return getMoisturePercentage(endpoint.get());
-        } else {
-            throw new NoSuchEndpointException();
-        }
+        var endpoint = getEndpoint(name, authentication);
+        return getMoisturePercentage(endpoint);
     }
 
-    public String getMoisturePercentage(Endpoint endpoint){
+    public String getMoisturePercentage(Endpoint endpoint) {
         try {
-            JSONObject moisture = new JSONObject( callApiGetResponse(endpoint, ApiCallDto.builder()
+            JSONObject moisture = new JSONObject(callApiGetResponse(endpoint, ApiCallDto.builder()
                     .path("/moisture")
                     .build()));
             return moisture.getString("moisture");
@@ -178,44 +163,29 @@ public class EndpointService {
         }
     }
 
-    public void setTakeSensorIntoAccount(String name,Boolean takeSensorIntoAccount, Authentication authentication) throws WrongResponseFromEndpoint, NoSuchEndpointException {
-        var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
-        if (endpoint.isPresent()) {
-            Map<String, Boolean> jsonMap = new HashMap<>();
-            jsonMap.put("moistureSensorEnabled", takeSensorIntoAccount);
-            var responseStatus = callEndpointApi(endpoint.get(), ApiCallDto.builder()
-                    .path("/sprinkleIfMoist")
-                    .jsonBody(jsonMap)
-                    .build());
-
-            if (responseStatus != 200) throw new WrongResponseFromEndpoint("Bad response from endpoint");
-        }
-        else {
-            throw new NoSuchEndpointException();
-        }
+    public void setTakeSensorIntoAccount(String name, Boolean takeSensorIntoAccount, Authentication authentication) throws WrongResponseFromEndpoint, NoSuchEndpointException {
+        var endpoint = getEndpoint(name, authentication);
+        Map<String, Boolean> jsonMap = new HashMap<>();
+        jsonMap.put("moistureSensorEnabled", takeSensorIntoAccount);
+        var responseStatus = callEndpointApi(endpoint, ApiCallDto.builder()
+                .path("/sprinkleIfMoist")
+                .jsonBody(jsonMap)
+                .build());
+        if (responseStatus != 200) throw new WrongResponseFromEndpoint("Bad response from endpoint");
     }
 
-  public String getCurrentFlow(String name, Authentication authentication)
-      throws NoSuchEndpointException {
-      var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
-      if (endpoint.isPresent()) {
-          return callApiGetResponse(endpoint.get(), ApiCallDto.builder()
-              .path("/current_flow")
-              .build());
-      } else {
-          throw new NoSuchEndpointException();
-      }
-  }
-
-    public String getTotalFlow(String name, Authentication authentication)    throws NoSuchEndpointException {
-        var endpoint = endpointRepository.findEndpointByNameAndUser(name,
-            usersService.getUserFromAuthentication(authentication));
-        if (endpoint.isPresent()) {
-            return callApiGetResponse(endpoint.get(), ApiCallDto.builder()
+    public String getCurrentFlow(String name, Authentication authentication)
+            throws NoSuchEndpointException {
+        var endpoint = getEndpoint(name, authentication);
+        return callApiGetResponse(endpoint, ApiCallDto.builder()
                 .path("/current_flow")
                 .build());
-        } else {
-            throw new NoSuchEndpointException();
-        }
+    }
+
+    public String getTotalFlow(String name, Authentication authentication) throws NoSuchEndpointException {
+        var endpoint = getEndpoint(name, authentication);
+        return callApiGetResponse(endpoint, ApiCallDto.builder()
+                .path("/current_flow")
+                .build());
     }
 }
