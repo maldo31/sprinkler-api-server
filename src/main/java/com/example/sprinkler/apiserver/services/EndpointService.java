@@ -7,8 +7,11 @@ import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.exceptions.WrongResponseFromEndpoint;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
+import io.netty.handler.codec.json.JsonObjectDecoder;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -154,15 +157,24 @@ public class EndpointService {
         return endpointRepository.findAllByUser(usersService.getUserFromAuthentication(authentication));
     }
 
-    public String getMoisture(String name, Authentication authentication) throws NoSuchEndpointException {
+    public String getMoistureForEndpoint(String name, Authentication authentication) throws NoSuchEndpointException {
         var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
         if (endpoint.isPresent()) {
-            var jsonResponse = callApiGetResponse(endpoint.get(), ApiCallDto.builder()
-                    .path("/moisture")
-                    .build());
-            return jsonResponse;
+            return getMoisturePercentage(endpoint.get());
         } else {
             throw new NoSuchEndpointException();
+        }
+    }
+
+    public String getMoisturePercentage(Endpoint endpoint){
+        try {
+            JSONObject moisture = new JSONObject( callApiGetResponse(endpoint, ApiCallDto.builder()
+                    .path("/moisture")
+                    .build()));
+            return moisture.getString("moisture");
+        } catch (JSONException e) {
+            log.error("Not a JSON format");
+            return "";
         }
     }
 

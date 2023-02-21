@@ -21,7 +21,7 @@ public class SprinklingTask implements Runnable {
     public void run() {
         if (!addSprinklingTaskDto.getSmart() ||
                 endpoint.getExpectedRainfall() < endpoint.getExpectedMinimalWatering() ||
-                endpoint.getSoilMoisture() < 0.6
+                Double.parseDouble(endpointService.getMoisturePercentage(endpoint))  < 0.95
         ) {
             log.info(
                     new Date() + " Sprinkling task executed on thread"
@@ -50,7 +50,7 @@ public class SprinklingTask implements Runnable {
         } catch (InterruptedException e) {
             log.error(e.getMessage());
         }
-        endpointService.relayOn(endpoint);
+        endpointService.relayOff(endpoint);
     }
 
     private void sprinkle(Endpoint endpoint, Integer waterQuantity) {
