@@ -79,4 +79,26 @@ public class SprinklingController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
     }
+
+    @GetMapping("/currentFlow")
+    public ResponseEntity<?> getCurrentFlow(@RequestParam String name, Authentication authentication){
+        try {
+            var endpointResponse = endpointService.getCurrentFlow(name,authentication);
+            return ResponseEntity.ok().body(endpointResponse);
+        } catch (NoSuchEndpointException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
+
+    @GetMapping("/totalFlow")
+    public ResponseEntity<?> getTotalFlow(@RequestParam String name, Authentication authentication){
+        try {
+            var endpointResponse = endpointService.getTotalFlow(name,authentication);
+            return ResponseEntity.ok().body(endpointResponse);
+        } catch (NoSuchEndpointException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+    }
 }

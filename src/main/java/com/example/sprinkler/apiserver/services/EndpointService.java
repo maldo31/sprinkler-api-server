@@ -157,8 +157,6 @@ public class EndpointService {
     public String getMoisture(String name, Authentication authentication) throws NoSuchEndpointException {
         var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
         if (endpoint.isPresent()) {
-            Map<String, Integer> jsonMap = new HashMap<>();
-            jsonMap.put("relay", 1);
             var jsonResponse = callApiGetResponse(endpoint.get(), ApiCallDto.builder()
                     .path("/moisture")
                     .build());
@@ -181,6 +179,30 @@ public class EndpointService {
             if (responseStatus != 200) throw new WrongResponseFromEndpoint("Bad response from endpoint");
         }
         else {
+            throw new NoSuchEndpointException();
+        }
+    }
+
+  public String getCurrentFlow(String name, Authentication authentication)
+      throws NoSuchEndpointException {
+      var endpoint = endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
+      if (endpoint.isPresent()) {
+          return callApiGetResponse(endpoint.get(), ApiCallDto.builder()
+              .path("/current_flow")
+              .build());
+      } else {
+          throw new NoSuchEndpointException();
+      }
+  }
+
+    public String getTotalFlow(String name, Authentication authentication)    throws NoSuchEndpointException {
+        var endpoint = endpointRepository.findEndpointByNameAndUser(name,
+            usersService.getUserFromAuthentication(authentication));
+        if (endpoint.isPresent()) {
+            return callApiGetResponse(endpoint.get(), ApiCallDto.builder()
+                .path("/current_flow")
+                .build());
+        } else {
             throw new NoSuchEndpointException();
         }
     }
