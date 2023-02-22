@@ -15,7 +15,7 @@ public class EndpointSchedule {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private int id;
 
   @ManyToOne
   private Endpoint endpoint;
@@ -27,7 +27,7 @@ public class EndpointSchedule {
   private String day;
 
   @Column(columnDefinition = "boolean default true")
-  private Boolean smart;
+  private boolean smart;
   
   private Integer taskId;
 

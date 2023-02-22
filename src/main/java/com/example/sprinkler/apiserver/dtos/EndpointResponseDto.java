@@ -14,10 +14,10 @@ public class EndpointResponseDto {
     private String name;
     private String address;
     private String city;
-    private Double latitude;
-    private Double longitude;
-    private Double expectedRainfall;
-    private Double expectedMinimalWatering;
+    private double latitude;
+    private double longitude;
+    private double expectedRainfall;
+    private double expectedMinimalWatering;
     private boolean flowMeter;
     private boolean moistureSensor;
     private boolean electroValve;
