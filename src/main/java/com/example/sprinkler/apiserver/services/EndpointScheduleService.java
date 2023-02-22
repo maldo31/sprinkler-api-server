@@ -58,7 +58,7 @@ public class EndpointScheduleService {
                 .day(addSprinklingTaskDto.getDay())
                 .hour(addSprinklingTaskDto.getHour())
                 .minute(addSprinklingTaskDto.getMinute())
-                .smart(addSprinklingTaskDto.getSmart())
+                .smart(addSprinklingTaskDto.isSmart())
                 .taskId(taskId).build();
         endpointScheduleRepository.save(endpointSchedule);
         taskId += 1;

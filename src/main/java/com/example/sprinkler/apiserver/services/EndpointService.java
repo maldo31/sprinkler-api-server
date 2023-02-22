@@ -13,13 +13,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,25 @@ public class EndpointService {
     @Autowired
     UsersService usersService;
 
+    private HttpStatusCode callEndpointApi(Endpoint endpoint, ApiCallDto apiCallDto) {
+        WebClient webClient = WebClient.create("http://" + endpoint.getAddress());
+        return webClient.post()
+                .uri(apiCallDto.getPath())
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(BodyInserters.fromValue(apiCallDto.getJsonBody()))
+                .exchangeToMono(response -> Mono.just(response.statusCode()))
+                .block();
+    }
+
+    private String callApiGetResponse(Endpoint endpoint, ApiCallDto apiCallDto) {
+        WebClient webClient = WebClient.create("http://" + endpoint.getAddress());
+        return webClient.get()
+                .uri(apiCallDto.getPath())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+    }
+
     public void relayOn(String name, Authentication authentication) throws WrongResponseFromEndpoint, NoSuchEndpointException {
         var endpoint = getEndpoint(name, authentication);
         Map<String, Integer> jsonMap = new HashMap<>();
@@ -45,8 +65,9 @@ public class EndpointService {
         int x = callEndpointApi(endpoint, ApiCallDto.builder()
                 .path("/relay")
                 .jsonBody(jsonMap)
-                .build());
-        if (x != 200) throw new WrongResponseFromEndpoint("Bad response from endpoint");
+                .build())
+                .value();
+        if (x != 200) throw new WrongResponseFromEndpoint("Server returned " + x + " status code");
     }
 
     public void relayOn(Endpoint endpoint) {
@@ -66,9 +87,10 @@ public class EndpointService {
         var x = callEndpointApi(endpoint, ApiCallDto.builder()
                 .path("/relay")
                 .jsonBody(jsonMap)
-                .build());
+                .build())
+                .value();
         if (x != 200) {
-            throw new WrongResponseFromEndpoint("Bad response from endpoint");
+            throw new WrongResponseFromEndpoint("Server returned " + x + " status code");
         }
     }
 
@@ -89,28 +111,6 @@ public class EndpointService {
                 .path("/sprinkle")
                 .jsonBody(jsonMap)
                 .build());
-    }
-
-    private int callEndpointApi(Endpoint endpoint, ApiCallDto apiCallDto) {
-        WebClient webClient = WebClient.create("http://" + endpoint.getAddress());
-
-        return webClient.post()
-                .uri(apiCallDto.getPath())
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(BodyInserters.fromValue(apiCallDto.getJsonBody()))
-                .exchange()
-                .map(ClientResponse::statusCode)
-                .block()
-                .value();
-    }
-
-    private String callApiGetResponse(Endpoint endpoint, ApiCallDto apiCallDto) {
-        WebClient webClient = WebClient.create("http://" + endpoint.getAddress());
-        return webClient.get()
-                .uri(apiCallDto.getPath())
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
     }
 
     @Transactional
@@ -170,8 +170,9 @@ public class EndpointService {
         var responseStatus = callEndpointApi(endpoint, ApiCallDto.builder()
                 .path("/sprinkleIfMoist")
                 .jsonBody(jsonMap)
-                .build());
-        if (responseStatus != 200) throw new WrongResponseFromEndpoint("Bad response from endpoint");
+                .build())
+                .value();
+        if (responseStatus != 200) throw new WrongResponseFromEndpoint("Server returned " +  " status code");
     }
 
     public String getCurrentFlow(String name, Authentication authentication)

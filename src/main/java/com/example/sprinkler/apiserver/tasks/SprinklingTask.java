@@ -19,28 +19,38 @@ public class SprinklingTask implements Runnable {
 
     @Override
     public void run() {
-        if (!addSprinklingTaskDto.getSmart() ||
-                endpoint.getExpectedRainfall() < endpoint.getExpectedMinimalWatering() ||
-                Double.parseDouble(endpointService.getMoisturePercentage(endpoint))  < 0.95
-        ) {
-            log.info(
-                    new Date() + " Sprinkling task executed on thread"
-                            + Thread.currentThread()
-                            .getName());
-            if (addSprinklingTaskDto.waterQuantiny != null) {
-                sprinkle(endpoint, addSprinklingTaskDto.waterQuantiny);
-            } else {
-                sprinkle(endpoint, addSprinklingTaskDto.getSprinklingDuration());
+        if (!addSprinklingTaskDto.isSmart()) {
+            if (endpoint.getExpectedRainfall() > endpoint.getExpectedMinimalWatering()) {
+                log.info(
+                        new Date() + "Expected rain, not sprinkling. Task started on thread "
+                                + Thread.currentThread()
+                                .getName());
+                return;
             }
-
-            log.info(new Date() + "Sprinkling dispatched to sprinkler");
-
+            if (Double.parseDouble(endpointService.getMoisturePercentage(endpoint)) > 0.95) {
+                log.info(
+                        new Date() + "Soil moisture is high enough, not Sprinkling. Task started on thread"
+                                + Thread.currentThread()
+                                .getName());
+                return;
+            }
+            dispatchSprinklingTask();
         } else {
-            log.info(
-                    new Date() + " Expected rain, not sprinkling. Task started on thread "
-                            + Thread.currentThread()
-                            .getName());
+            dispatchSprinklingTask();
         }
+    }
+
+    private void dispatchSprinklingTask() {
+        log.info(
+                new Date() + "Dispatching sprinkling task to sprinkler.Task executed on thread"
+                        + Thread.currentThread()
+                        .getName());
+        if (addSprinklingTaskDto.getWaterQuantiny() != 0) {
+            sprinkle(endpoint, addSprinklingTaskDto.getWaterQuantiny());
+        } else {
+            sprinkle(endpoint, addSprinklingTaskDto.getSprinklingDuration());
+        }
+        log.info(new Date() + "Sprinkling dispatched to sprinkler");
     }
 
     private void sprinkle(Endpoint endpoint, long sprinklingTime) {
