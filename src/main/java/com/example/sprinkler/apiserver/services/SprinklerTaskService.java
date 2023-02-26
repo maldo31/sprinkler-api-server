@@ -19,6 +19,6 @@ public class SprinklerTaskService {
 
     long now = System.currentTimeMillis() / 1000;
     log.info(
-        "schedule tasks using cron jobs - " + now);
+        "Schedule tasks using cron jobs - " + now);
   }
 }
