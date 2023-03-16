@@ -2,6 +2,7 @@ package com.example.sprinkler.apiserver.controllers;
 
 import com.example.sprinkler.apiserver.dtos.AddEndpointDto;
 import com.example.sprinkler.apiserver.dtos.EndpointResponseDto;
+import com.example.sprinkler.apiserver.dtos.RegisterEndpointDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.services.EndpointService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,11 @@ public class EndpointController {
   public ResponseEntity<Endpoint> addEndpoint(@RequestBody AddEndpointDto addEndpointDto) {
     return ResponseEntity.ok().body(endpointService.addEndpoint(addEndpointDto));
   }
+  @PostMapping("/UNSECURED/registerEndpoint")
+  public ResponseEntity<Endpoint> registerEndpoint(@RequestBody RegisterEndpointDto registerEndpointDto) {
+    return ResponseEntity.ok().body(endpointService.registerEndpoint(registerEndpointDto));
+  }
+
 
   @GetMapping("/getEndpoint")
   public ResponseEntity<?> getEndpoint(@RequestParam String name, Authentication authentication) {
@@ -43,12 +50,19 @@ public class EndpointController {
     }
   }
 
+
   @GetMapping("/getEndpoints")
   public List<EndpointResponseDto> getEndpoints(Authentication authentication) {
 
     return endpointService.getEndpoints(authentication).stream()
             .map(Endpoint::toEndpointResponseDto)
             .collect(Collectors.toList());
+  }
+
+  @GetMapping("/getUnregisteredEndpoints")
+  public List<Endpoint> getUnregisteredEndpoints() {
+
+    return new ArrayList<>(endpointService.getUnregisteredEndpoints());
   }
 
   @DeleteMapping("/deleteEndpoint")

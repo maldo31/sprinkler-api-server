@@ -18,7 +18,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info().title("Sprinkler Server API")
                         .title("REST API of sprinkler management server")
-                        .version("v1.0.0"))
+                        .version("v1.0.1"))
                 .addSecurityItem(new SecurityRequirement()
                         .addList(securitySchemeName))
                 .components(new Components()

@@ -3,6 +3,7 @@ package com.example.sprinkler.apiserver.services;
 import com.example.sprinkler.apiserver.dtos.AddEndpointDto;
 import com.example.sprinkler.apiserver.dtos.ApiCallDto;
 import com.example.sprinkler.apiserver.dtos.ExecuteSprinklingDto;
+import com.example.sprinkler.apiserver.dtos.RegisterEndpointDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.exceptions.WrongResponseFromEndpoint;
@@ -129,6 +130,13 @@ public class EndpointService {
     }
 
     @Transactional
+    public Endpoint registerEndpoint(RegisterEndpointDto registerEndpointDto) {
+        return endpointRepository.save(Endpoint.builder()
+                .address(registerEndpointDto.getAddress())
+                .build());
+    }
+
+    @Transactional
     public String registerEndpoint(String address) {
         return endpointRepository.save(Endpoint.builder().address(address).build()).toString();
     }
@@ -145,6 +153,12 @@ public class EndpointService {
     public List<Endpoint> getEndpoints(Authentication authentication) {
         return endpointRepository.findAllByUser(usersService.getUserFromAuthentication(authentication));
     }
+
+    public List<Endpoint> getUnregisteredEndpoints() {
+        var endpoints = endpointRepository.findAllByUserIsNull();
+        return endpoints;
+    }
+
 
     public String getMoistureForEndpoint(String name, Authentication authentication) throws NoSuchEndpointException {
         var endpoint = getEndpoint(name, authentication);

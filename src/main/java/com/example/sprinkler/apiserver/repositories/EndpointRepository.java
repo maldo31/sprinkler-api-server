@@ -15,4 +15,6 @@ public interface EndpointRepository extends CrudRepository<Endpoint, Integer> {
   void deleteByNameAndUser(String name, User user);
 
   List<Endpoint> findAllByUser(User user);
+
+  List<Endpoint> findAllByUserIsNull();
 }
