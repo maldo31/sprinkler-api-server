@@ -9,24 +9,31 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class CoordinatesService {
 
-  @Value("${apiKeys.geo}")
-  private String geoKey;
+    @Value("${apiKeys.geo}")
+    private String geoKey;
 
-  public Point getCoordinates(String city) {
-    WebClient client = WebClient.builder()
-        .defaultHeader("X-Api-Key", geoKey)
-        .build();
-    var responseSpec = client.get()
-        .uri("https://api.api-ninjas.com/v1/geocoding?city=" + city)
-        .retrieve()
-        .bodyToFlux(EndpointLocationDto.class)
-        .blockFirst();
-    if (responseSpec != null) {
-      return new Point(Double.parseDouble(responseSpec.getLatitude()),
-          Double.parseDouble(responseSpec.getLongitude()));
-    } else {
-      return new Point(0, 0);
+    @Value("${apiKeys.geocodinguri")
+    private String geoUri;
+
+    public Point getCoordinates(String city) {
+      EndpointLocationDto responseSpec = callAPIAndGetLocation(city);
+      if (responseSpec != null) {
+            return new Point(Double.parseDouble(responseSpec.getLatitude()),
+                    Double.parseDouble(responseSpec.getLongitude()));
+        } else {
+            return new Point(0, 0);
+        }
     }
+
+  private EndpointLocationDto callAPIAndGetLocation(String city) {
+    WebClient client = WebClient.builder()
+            .defaultHeader("X-Api-Key", geoKey)
+            .build();
+    return client.get()
+            .uri(geoUri + city)
+            .retrieve()
+            .bodyToFlux(EndpointLocationDto.class)
+            .blockFirst();
   }
 
 }

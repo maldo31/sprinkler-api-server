@@ -12,7 +12,7 @@ public class AddEndpointDto {
   private String name;
   private String address;
   private String city;
-  private Double expectedMinimalWatering = 10.0;
+  private double expectedMinimalWatering = 10.0;
 }
 
 
