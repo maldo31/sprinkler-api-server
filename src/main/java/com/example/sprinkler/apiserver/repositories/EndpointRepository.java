@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface EndpointRepository extends CrudRepository<Endpoint, Integer> {
 
   Optional<Endpoint> findEndpointByNameAndUser(String name, User user);
+  Optional<Endpoint> findEndpointByNameAndUser(String name, String user);
 
   void deleteByNameAndUser(String name, User user);
 

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.geo.Point;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,8 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static reactor.core.publisher.Mono.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,34 +81,47 @@ class EndpointServiceTest {
 
     @Test
     void getEndpoints() {
-        List<Endpoint> expectedEndpoints =  Arrays.asList(new Endpoint(), new Endpoint());
         //Given
-        var user = new User();
-        given(endpointRepository.findAllByUser(user)).willReturn(expectedEndpoints);
-        given(usersService.getUserFromAuthentication(authentication)).willReturn(user);
+        var testData = new TestData();
+        given(endpointRepository.findAllByUser(testData.user())).willReturn(testData.expectedEndpoints());
+        given(usersService.getUserFromAuthentication(authentication)).willReturn(testData.user());
 
         //When
         var endpointsList = endpointService.getEndpoints(authentication);
         //Then
-        Assertions.assertEquals(expectedEndpoints,endpointsList);
+        Assertions.assertEquals(testData.expectedEndpoints(),endpointsList);
     }
 
     @Test
     void deleteEndpoint() {
+        //Given
+        var testData = new TestData();
+//        Mockito.when(endpointService.usersService.getUserFromAuthentication(authentication)).thenReturn(testData.user());
+//        given(endpointService.usersService.getUserFromAuthentication(authentication)).willReturn(testData.user());
+
+        endpointService.deleteEndpoint(testData.endpoint().getName(),authentication);
+
+
     }
 
     @Test
     void getEndpoint() throws NoSuchEndpointException {
         //Given
-        var user = new User();
+        var testData = new TestData();
         var endpointName = "endpointName";
-        var expectedEndpoint = new Endpoint();
-        given(endpointRepository.findEndpointByNameAndUser(endpointName,user)).willReturn(Optional.of(expectedEndpoint));
-        given(usersService.getUserFromAuthentication(authentication)).willReturn(user);
+        given(usersService.getUserByUsername(authentication.getName())).willReturn(testData.user());
+        given(endpointRepository.findEndpointByNameAndUser(endpointName,testData.user())).willReturn(
+            Optional.ofNullable(testData.endpoint()));
 
         //When
         var returnedEndpoint = endpointService.getEndpoint(endpointName,authentication);
         //Then
-        Assertions.assertEquals(expectedEndpoint,returnedEndpoint);
+        Assertions.assertEquals(testData.endpoint(),returnedEndpoint);
+    }
+
+    private record TestData(User user,Endpoint endpoint,List<Endpoint> expectedEndpoints){
+        public TestData(){
+            this(User.builder().build(),new Endpoint(),Arrays.asList(new Endpoint(), new Endpoint()));
+        }
     }
 }

@@ -5,6 +5,8 @@ import com.example.sprinkler.apiserver.dtos.EndpointResponseDto;
 import com.example.sprinkler.apiserver.entities.Endpoint;
 import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.services.EndpointService;
+import com.example.sprinkler.apiserver.services.UsersService;
+import java.security.Principal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,15 +30,18 @@ public class EndpointController {
   @Autowired
   EndpointService endpointService;
 
+  @Autowired
+  UsersService usersService;
+
   @PostMapping("/addEndpoint")
   public ResponseEntity<Endpoint> addEndpoint(@RequestBody AddEndpointDto addEndpointDto) {
     return ResponseEntity.ok().body(endpointService.addEndpoint(addEndpointDto));
   }
 
   @GetMapping("/getEndpoint")
-  public ResponseEntity<?> getEndpoint(@RequestParam String name, Authentication authentication) {
+  public ResponseEntity<?> getEndpoint(@RequestParam String name, Principal principal) {
     try {
-      return ResponseEntity.ok(endpointService.getEndpoint(name,authentication).toEndpointResponseDto());
+      return ResponseEntity.ok(endpointService.getEndpoint(name,principal).toEndpointResponseDto());
     } catch (NoSuchEndpointException e) {
       log.error(e.getMessage());
       return ResponseEntity.notFound().build();

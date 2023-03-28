@@ -8,6 +8,7 @@ import com.example.sprinkler.apiserver.exceptions.NoSuchEndpointException;
 import com.example.sprinkler.apiserver.exceptions.WrongResponseFromEndpoint;
 import com.example.sprinkler.apiserver.repositories.EndpointRepository;
 import jakarta.transaction.Transactional;
+import java.security.Principal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -141,13 +142,14 @@ public class EndpointService {
         return endpointRepository.save(Endpoint.builder().address(address).build()).toString();
     }
 
-    public Endpoint getEndpoint(String name, Authentication authentication) throws NoSuchEndpointException {
-        return endpointRepository.findEndpointByNameAndUser(name, usersService.getUserFromAuthentication(authentication)).orElseThrow(NoSuchEndpointException::new);
+    public Endpoint getEndpoint(String name, Principal principal) throws NoSuchEndpointException {
+
+        return endpointRepository.findEndpointByNameAndUser(name,usersService.getUserByUsername(principal.getName())).orElseThrow(NoSuchEndpointException::new);
     }
 
     @Transactional
-    public void deleteEndpoint(String name, Authentication authentication) {
-        endpointRepository.deleteByNameAndUser(name, usersService.getUserFromAuthentication(authentication));
+    public void deleteEndpoint(String name, Principal principal) {
+        endpointRepository.deleteByNameAndUser(name, usersService.getUserByUsername(principal.getName()));
     }
 
     public List<Endpoint> getEndpoints(Authentication authentication) {
